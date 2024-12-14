@@ -77,7 +77,6 @@
             gamma_avg = gamma_avg / iters;
             params.baseline = [alpha_avg, beta_avg, gamma_avg]
             document.getElementById('baseline').innerHTML = 'alpha: ' + alpha_avg + '; beta: ' + beta_avg + '; gamma: ' + gamma_avg;
-            params_set++;
             compute_window();
         }
 
@@ -96,12 +95,11 @@
             gamma_avg = gamma_avg / iters;
             params.maximum = [alpha_avg, beta_avg, gamma_avg];
             document.getElementById('maximum').innerHTML = 'alpha: ' + alpha_avg + '; beta: ' + beta_avg + '; gamma: ' + gamma_avg;
-            params_set++;
             compute_window();
         }
 
         function compute_window(){
-            if (params.baseline == false && params.maximum == false){
+            if (params.baseline === false || params.maximum === false){
                 return;
             }
             let alpha_diff = angle_diff(params.maximum[0], params.baseline[0]);

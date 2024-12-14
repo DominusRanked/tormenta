@@ -36,7 +36,7 @@
         maximum:
         <p id="maximum">not set</p>
     </div>
-    <div><p id="window_status" style="padding:10px; background-color: rgb(0, 0, 0);">Current status: not running</p></div>
+    <div><p id="window_status" style="padding:10px; background-color: rgb(255, 255, 255);">Current status: not running</p></div>
 
     <div>accelerometer data:
         <p id='accel_data'></p>
@@ -117,6 +117,7 @@
             }
             window_params.set = true
             window_params.range = Math.abs(window_params.max - window_params.min)
+            document.getElementById('window_status').innerHTML = 'Current status: Window Calculated';
         }
 
         window.Telegram.WebApp.onEvent('accelerometerChanged', function() {
@@ -125,7 +126,7 @@
         
         window.Telegram.WebApp.onEvent('deviceOrientationChanged', function() {
                 document.getElementById('orient_data').innerHTML = '(alpha: ' + this.DeviceOrientation.alpha + '; beta: ' + this.DeviceOrientation.beta + '; gamma: ' + this.DeviceOrientation.gamma + ')';
-                if (window_params.set){
+                if (window_params.set == true){
                     if (window_params.angle == "alpha"){
                         let angle = this.DeviceOrientation.alpha;
                     }

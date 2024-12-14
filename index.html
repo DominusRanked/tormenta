@@ -102,24 +102,24 @@
             let alpha_diff = params.maximum[0] - params.baseline[0]
             let beta_diff = params.maximum[1] - params.baseline[1]
             let gamma_diff = params.maximum[2] - params.baseline[2]
-            if (Math.abs(alpha_diff) > Math.abs(gamma_diff) && Math.abs(alpha_diff) > Math.abs(beta_diff)){
+            if (Math.abs(alpha_diff) >= Math.abs(gamma_diff) && Math.abs(alpha_diff) >= Math.abs(beta_diff)){
                 window_params.angle = "alpha";
                 window_params.min = params.baseline[0];
                 window_params.max = params.maximum[0];
             }
-            else if (Math.abs(beta_diff) > Math.abs(gamma_diff) && Math.abs(alpha_diff) < Math.abs(beta_diff)){
+            else if (Math.abs(beta_diff) >= Math.abs(gamma_diff) && Math.abs(alpha_diff) <= Math.abs(beta_diff)){
                 window_params.angle = "beta";
                 window_params.min = params.baseline[1];
                 window_params.max = params.maximum[1];
             }
-            else if (Math.abs(beta_diff) < Math.abs(gamma_diff) && Math.abs(alpha_diff) < Math.abs(gamma_diff)){
+            else if (Math.abs(beta_diff) <= Math.abs(gamma_diff) && Math.abs(alpha_diff) <= Math.abs(gamma_diff)){
                 window_params.angle = "gamma";
                 window_params.min = params.baseline[2];
                 window_params.max = params.maximum[2];
             }
             window_params.set = true;
             window_params.range = Math.abs(window_params.max - window_params.min);
-            document.getElementById('window_status').innerHTML = 'Current status: Window Calculated';
+            document.getElementById('window_status').innerHTML = 'Current status: Window Calculated ' + window_params.angle;
         }
 
         window.Telegram.WebApp.onEvent('accelerometerChanged', function() {
@@ -129,14 +129,15 @@
         window.Telegram.WebApp.onEvent('deviceOrientationChanged', function() {
                 document.getElementById('orient_data').innerHTML = '(alpha: ' + this.DeviceOrientation.alpha + '; beta: ' + this.DeviceOrientation.beta + '; gamma: ' + this.DeviceOrientation.gamma + ')';
                 if (window_params.set == true){
+                    let angle = this.DeviceOrientation.alpha;
                     if (window_params.angle == "alpha"){
-                        let angle = this.DeviceOrientation.alpha;
+                        angle = this.DeviceOrientation.alpha;
                     }
                     else if (window_params.angle == "beta"){
-                        let angle = this.DeviceOrientation.beta;
+                        angle = this.DeviceOrientation.beta;
                     }
                     else if (window_params.angle == "gamma"){
-                        let angle = this.DeviceOrientation.gamma;
+                        angle = this.DeviceOrientation.gamma;
                     }
                     let dist = Math.abs(window_params.max-angle);
                     frac = dist/window_params.range;

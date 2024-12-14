@@ -53,6 +53,7 @@
     <script>
         window.Telegram.WebApp.Accelerometer.start();
         window.Telegram.WebApp.Gyroscope.start();
+        window.Telegram.WebApp.sendData('test data');
         let params = {baseline: false, maximum: false}
         let window_params = {set: false, angle:'none', min:0, max: 0, range: 0}
 
@@ -146,7 +147,7 @@
                     let frac = dist/window_params.range;
                     document.getElementById('window_status').style.backgroundColor = 'rgb(255,' + Math.round(frac * 255) + ',' + Math.round(frac * 255) + ')';
                     document.getElementById('window_status').innerHTML = 'Current status: frac='+ frac;
-                    window.Telegram.WebApp.sendData(Math.round(frac * 100))
+                    window.Telegram.WebApp.sendData('sus')
                 }
             })
         window.Telegram.WebApp.DeviceOrientation.start();

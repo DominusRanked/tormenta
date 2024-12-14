@@ -36,7 +36,7 @@
         maximum:
         <p id="maximum">not set</p>
     </div>
-    <div><p id="window_status" style="padding:10px; background-color: rgb(255, 0, 0);">Current status</p></div>
+    <div><p id="window_status" style="padding:10px; background-color: rgb(0, 0, 0);">Current status: not running</p></div>
 
     <div>accelerometer data:
         <p id='accel_data'></p>
@@ -138,6 +138,7 @@
                     let dist = Math.abs(window_params.max-angle);
                     frac = dist/window_params.range;
                     document.getElementById('window_status').style.backgroundColor = 'rgb(255,' + Math.round(frac * 255) + ',' + Math.round(frac * 255) + ')';
+                    document.getElementById('window_status').innerHTML = 'Current status: frac='+ frac;
                 }
             })
         window.Telegram.WebApp.DeviceOrientation.start();

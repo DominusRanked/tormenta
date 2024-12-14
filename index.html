@@ -57,6 +57,12 @@
         let params = {baseline: [0,0,0], maximum: [0,0,0]}
         let window_params = {set: false, angle:'none', min:0, max: 0, range: 0}
 
+        function angle_diff(angle1, angle2){
+            let a = Math.PI + angle1 - angle2
+            let n = 2 * Math.PI
+            return(Math.abs((a % n + n) % n - Math.PI))
+        }
+
         function baseline(){
             let alpha_avg = 0;
             let beta_avg = 0;
@@ -99,9 +105,9 @@
             if (params_set != 2){
                 return;
             }
-            let alpha_diff = params.maximum[0] - params.baseline[0]
-            let beta_diff = params.maximum[1] - params.baseline[1]
-            let gamma_diff = params.maximum[2] - params.baseline[2]
+            let alpha_diff = angle_diff(params.maximum[0], params.baseline[0]);
+            let beta_diff = angle_diff(params.maximum[1], params.baseline[1]);
+            let gamma_diff = angle_diff(params.maximum[2], params.baseline[2]);
             if (Math.abs(alpha_diff) >= Math.abs(gamma_diff) && Math.abs(alpha_diff) >= Math.abs(beta_diff)){
                 window_params.angle = "alpha";
                 window_params.min = params.baseline[0];
@@ -139,7 +145,7 @@
                     else if (window_params.angle == "gamma"){
                         angle = this.DeviceOrientation.gamma;
                     }
-                    let dist = Math.abs(window_params.max-angle);
+                    let dist = angle_diff(window_params.max, angle);
                     frac = dist/window_params.range;
                     document.getElementById('window_status').style.backgroundColor = 'rgb(255,' + Math.round(frac * 255) + ',' + Math.round(frac * 255) + ')';
                     document.getElementById('window_status').innerHTML = 'Current status: frac='+ frac;

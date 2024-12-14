@@ -53,8 +53,7 @@
     <script>
         window.Telegram.WebApp.Accelerometer.start();
         window.Telegram.WebApp.Gyroscope.start();
-        let params_set = 0;
-        let params = {baseline: [0,0,0], maximum: [0,0,0]}
+        let params = {baseline: false, maximum: false}
         let window_params = {set: false, angle:'none', min:0, max: 0, range: 0}
 
         function angle_diff(angle1, angle2){
@@ -67,7 +66,7 @@
             let alpha_avg = 0;
             let beta_avg = 0;
             let gamma_avg = 0;
-            let iters = 10
+            let iters = 100;
             for (let i = 0; i < iters; i++) {
                 alpha_avg += window.Telegram.WebApp.DeviceOrientation.alpha;
                 beta_avg += window.Telegram.WebApp.DeviceOrientation.beta;
@@ -86,7 +85,7 @@
             let alpha_avg = 0;
             let beta_avg = 0;
             let gamma_avg = 0;
-            let iters = 10;
+            let iters = 100;
             for (let i = 0; i < iters; i++) {
                 alpha_avg += window.Telegram.WebApp.DeviceOrientation.alpha;
                 beta_avg += window.Telegram.WebApp.DeviceOrientation.beta;
@@ -102,7 +101,7 @@
         }
 
         function compute_window(){
-            if (params_set != 2){
+            if (params.baseline == false && params.maximum == false){
                 return;
             }
             let alpha_diff = angle_diff(params.maximum[0], params.baseline[0]);
@@ -124,7 +123,7 @@
                 window_params.max = params.maximum[2];
             }
             window_params.set = true;
-            window_params.range = Math.abs(window_params.max - window_params.min);
+            window_params.range = angle_diff(window_params.max, window_params.min);
             document.getElementById('window_status').innerHTML = 'Current status: Window Calculated ' + window_params.angle;
         }
 
@@ -145,10 +144,11 @@
                     else if (window_params.angle == "gamma"){
                         angle = this.DeviceOrientation.gamma;
                     }
-                    let dist = angle_diff(window_params.max, angle);
-                    frac = dist/window_params.range;
+                    let dist = angle_diff(window_params.min, angle);
+                    let frac = dist/window_params.range;
                     document.getElementById('window_status').style.backgroundColor = 'rgb(255,' + Math.round(frac * 255) + ',' + Math.round(frac * 255) + ')';
                     document.getElementById('window_status').innerHTML = 'Current status: frac='+ frac;
+                    window.Telegram.WebApp.sendData(Math.round(frac * 100))
                 }
             })
         window.Telegram.WebApp.DeviceOrientation.start();

@@ -36,7 +36,7 @@
         maximum:
         <p id="maximum">not set</p>
     </div>
-    <div><p id="window_status" style="padding:10px; background-color: rgb(255, 255, 255);">Current status: not running</p></div>
+    <div><p id="window_status" style="padding:10px; color: black; background-color: rgb(255, 255, 255);">Current status: not running</p></div>
 
     <div>accelerometer data:
         <p id='accel_data'></p>
@@ -72,14 +72,15 @@
             gamma_avg = gamma_avg / iters;
             params.baseline = [alpha_avg, beta_avg, gamma_avg]
             document.getElementById('baseline').innerHTML = 'alpha: ' + alpha_avg + '; beta: ' + beta_avg + '; gamma: ' + gamma_avg;
-            params_set++
+            params_set++;
+            compute_window();
         }
 
         function maximum(){
             let alpha_avg = 0;
             let beta_avg = 0;
             let gamma_avg = 0;
-            let iters = 10
+            let iters = 10;
             for (let i = 0; i < iters; i++) {
                 alpha_avg += window.Telegram.WebApp.DeviceOrientation.alpha;
                 beta_avg += window.Telegram.WebApp.DeviceOrientation.beta;
@@ -88,35 +89,36 @@
             alpha_avg = alpha_avg / iters;
             beta_avg = beta_avg / iters;
             gamma_avg = gamma_avg / iters;
-            params.maximum = [alpha_avg, beta_avg, gamma_avg]
+            params.maximum = [alpha_avg, beta_avg, gamma_avg];
             document.getElementById('maximum').innerHTML = 'alpha: ' + alpha_avg + '; beta: ' + beta_avg + '; gamma: ' + gamma_avg;
-            params_set++
+            params_set++;
+            compute_window();
         }
 
         function compute_window(){
             if (params_set != 2){
-                return
+                return;
             }
             let alpha_diff = params.maximum[0] - params.baseline[0]
             let beta_diff = params.maximum[1] - params.baseline[1]
             let gamma_diff = params.maximum[2] - params.baseline[2]
             if (Math.abs(alpha_diff) > Math.abs(gamma_diff) && Math.abs(alpha_diff) > Math.abs(beta_diff)){
-                window_params.angle = "alpha"
-                window_params.min = params.baseline[0]
-                window_params.max = params.maximum[0]
+                window_params.angle = "alpha";
+                window_params.min = params.baseline[0];
+                window_params.max = params.maximum[0];
             }
             else if (Math.abs(beta_diff) > Math.abs(gamma_diff) && Math.abs(alpha_diff) < Math.abs(beta_diff)){
-                window_params.angle = "beta"
-                window_params.min = params.baseline[1]
-                window_params.max = params.maximum[1]
+                window_params.angle = "beta";
+                window_params.min = params.baseline[1];
+                window_params.max = params.maximum[1];
             }
             else if (Math.abs(beta_diff) < Math.abs(gamma_diff) && Math.abs(alpha_diff) < Math.abs(gamma_diff)){
-                window_params.angle = "gamma"
-                window_params.min = params.baseline[2]
-                window_params.max = params.maximum[2]
+                window_params.angle = "gamma";
+                window_params.min = params.baseline[2];
+                window_params.max = params.maximum[2];
             }
-            window_params.set = true
-            window_params.range = Math.abs(window_params.max - window_params.min)
+            window_params.set = true;
+            window_params.range = Math.abs(window_params.max - window_params.min);
             document.getElementById('window_status').innerHTML = 'Current status: Window Calculated';
         }
 

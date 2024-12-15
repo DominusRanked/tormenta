@@ -51,7 +51,7 @@
     </div>
 
     <script>
-        fetch("http://131.215.167.168:8000/zappy", {
+        fetch("https://131.215.167.168:8000/zappy", {
             method: "POST",
             body: JSON.stringify({
                 initData: window.Telegram.WebApp.initData,
@@ -160,7 +160,7 @@
                     document.getElementById('window_status').style.backgroundColor = 'rgb(255,' + Math.round(frac * 255) + ',' + Math.round(frac * 255) + ')';
                     document.getElementById('window_status').innerHTML = 'Current status: frac='+ frac;
                     // put post request here
-                    fetch("http://131.215.167.168:8000/zappy", {
+                    fetch("https://131.215.167.168:8000/zappy", {
                         method: "POST",
                         body: JSON.stringify({
                             initData: window.Telegram.WebApp.initData,

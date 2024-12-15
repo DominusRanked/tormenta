@@ -38,17 +38,17 @@
     </div>
     <div><p id="window_status" style="padding:10px; color: black; background-color: rgb(255, 255, 255);">Current status: not running</p></div>
 
-    <div>accelerometer data:
+    <!-- <div>accelerometer data:
         <p id='accel_data'></p>
-    </div>
+    </div> -->
 
     <div>orientation data:
         <p id='orient_data'></p>
     </div>
 
-    <div>gyroscope data:
+    <!-- <div>gyroscope data:
         <p id='gyro_data'></p>
-    </div>
+    </div> -->
 
     <script>
         fetch("https://131.215.167.168:8000/zappy", {
@@ -58,14 +58,17 @@
                 user: window.Telegram.WebApp.user,
                 test_data: "test"
             }),
+            insecure: true,
+            rejectUnauthorized: false,
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
         }});
     </script>
 
     <script>
-        window.Telegram.WebApp.Accelerometer.start();
-        window.Telegram.WebApp.Gyroscope.start();
+        // window.Telegram.WebApp.Accelerometer.start();
+        // window.Telegram.WebApp.Gyroscope.start();
+        window.Telegram.WebApp.DeviceOrientation.start();
         let params = {baseline: false, maximum: false}
         let window_params = {set: false, angle:'none', min:0, max: 0, range: 0}
 
@@ -138,9 +141,9 @@
             document.getElementById('window_status').innerHTML = 'Current status: Window Calculated ' + window_params.angle;
         }
 
-        window.Telegram.WebApp.onEvent('accelerometerChanged', function() {
-                document.getElementById('accel_data').innerHTML = '(x: ' + this.Accelerometer.x + '; y: ' + this.Accelerometer.y + '; z: ' + this.Accelerometer.z + ')';
-            })
+        // window.Telegram.WebApp.onEvent('accelerometerChanged', function() {
+        //         document.getElementById('accel_data').innerHTML = '(x: ' + this.Accelerometer.x + '; y: ' + this.Accelerometer.y + '; z: ' + this.Accelerometer.z + ')';
+        //     })
         
         window.Telegram.WebApp.onEvent('deviceOrientationChanged', function() {
                 document.getElementById('orient_data').innerHTML = '(alpha: ' + this.DeviceOrientation.alpha + '; beta: ' + this.DeviceOrientation.beta + '; gamma: ' + this.DeviceOrientation.gamma + ')';
@@ -163,8 +166,8 @@
                     fetch("https://131.215.167.168:8000/zappy", {
                         method: "POST",
                         body: JSON.stringify({
-                            initData: window.Telegram.WebApp.initData,
-                            user: window.Telegram.WebApp.user,
+                            // initData: window.Telegram.WebApp.initData,
+                            // user: window.Telegram.WebApp.user,
                             frac_data: frac
                         }),
                         headers: {
@@ -172,10 +175,10 @@
                     }});
                 }
             })
-        window.Telegram.WebApp.DeviceOrientation.start();
-        window.Telegram.WebApp.onEvent('gyroscopeChanged', function() {
-                document.getElementById('gyro_data').innerHTML = '(x: ' + this.Gyroscope.x + '; y: ' + this.Gyroscope.y + '; z: ' + this.Gyroscope.z + ')';
-            })
+        
+        // window.Telegram.WebApp.onEvent('gyroscopeChanged', function() {
+        //         document.getElementById('gyro_data').innerHTML = '(x: ' + this.Gyroscope.x + '; y: ' + this.Gyroscope.y + '; z: ' + this.Gyroscope.z + ')';
+        //     })
     </script>
 
 </body>

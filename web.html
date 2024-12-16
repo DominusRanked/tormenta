@@ -42,7 +42,7 @@
     <div>orientation data:
         <p id='orient_data'></p>
     </div>
-<!-- 
+
     <script>
         function request_perm() {
             if (typeof DeviceMotionEvent.requestPermission === 'function') {
@@ -61,7 +61,7 @@
                 window.addEventListener('devicemotion', updateOrientation, true);
             }
         }
-    </script> -->
+    </script>
 
     <script>
         let alpha = 0; // between 0 and 360
@@ -142,12 +142,14 @@
                         body: JSON.stringify({
                             frac_data: frac
                         }),
+                        insecure: true,
+                        rejectUnauthorized: false,
                         headers: {
                             "Content-type": "application/json; charset=UTF-8"
                     }});
             }
         }
-        window.addEventListener("deviceorientation", handleOrientation);
+        // window.addEventListener("deviceorientation", handleOrientation);
        
     </script>
 

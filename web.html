@@ -122,7 +122,7 @@
             beta = event.beta + 180;
             gamma = event.gamma + 90;
             document.getElementById('orient_data').innerHTML = `alpha: ${alpha}; beta: ${beta}; gamma: ${gamma}`;
-            if (window_params.set == true && ((Date.now() - time) > 3000)){
+            if (window_params.set == true && ((Date.now() - time) > 1500)){
                     time = Date.now()
                     let angle = event.alpha;
                     if (window_params.angle == "alpha"){

@@ -45,20 +45,21 @@
 
     <script>
         function request_perm() {
-            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+            if (typeof DeviceOrientation.requestPermission === 'function') {
                 // Handle iOS 13+ devices.
-                DeviceMotionEvent.requestPermission()
+                DeviceOrientation.requestPermission()
                 .then((state) => {
                     if (state === 'granted') {
-                    window.addEventListener('devicemotion', handleOrientation);
+                        window.addEventListener("deviceorientation", handleOrientation);;
                     } else {
                     console.error('Request to access the orientation was rejected');
                     }
                 })
                 .catch(console.error);
-            } else {
+            } 
+            else {
                 // Handle regular non iOS 13+ devices.
-                window.addEventListener('devicemotion', handleOrientation);
+                window.addEventListener("deviceorientation", handleOrientation);
             }
         }
     </script>

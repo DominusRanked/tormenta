@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="MobileOptimized" content="176" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="robots" content="noindex,nofollow" />
+    <style>
+        body{
+        font-family:Verdana, Geneva, sans-serif;
+        line-height:1.5;
+        background-color: black;
+        color: white;
+        font-size: 14px;
+        margin: 10px;
+        padding: 0px;
+        }
+    </style>
+    <title></title>
+</head>
+
+<body>
+    <button onclick="request_perm()">Request orientation permission</button>
+    <div>
+        <button onclick="baseline()">Set 0 point</button>
+        <button onclick="maximum()">Set max point</button>
+    </div>
+
+    <div>
+        baseline:
+        <p id="baseline">not set</p>
+    </div>
+    <div>
+        maximum:
+        <p id="maximum">not set</p>
+    </div>
+    <div><p id="window_status" style="padding:10px; color: black; background-color: rgb(255, 255, 255);">Current status: not running</p></div>
+
+    <div>orientation data:
+        <p id='orient_data'></p>
+    </div>
+
+    <script>
+        fetch("https://131.215.167.168:8000/zappy", {
+            method: "POST",
+            body: JSON.stringify({
+                test_data: "test"
+            }),
+            insecure: true,
+            rejectUnauthorized: false,
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+        }});
+    </script>
+
+    <script>
+        function request_perm() {
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                // Handle iOS 13+ devices.
+                DeviceMotionEvent.requestPermission()
+                .then((state) => {
+                    if (state === 'granted') {
+                    window.addEventListener('devicemotion', handleOrientation);
+                    } else {
+                    console.error('Request to access the orientation was rejected');
+                    }
+                })
+                .catch(console.error);
+            } else {
+                // Handle regular non iOS 13+ devices.
+                window.addEventListener('devicemotion', handleOrientation);
+            }
+        }
+    </script>
+
+    <script>
+        let params = {baseline: false, maximum: false}
+        let window_params = {set: false, angle:'none', min:0, max: 0, range: 0}
+
+        function angle_diff(angle1, angle2){
+            let a = Math.PI + angle1 - angle2
+            let n = 2 * Math.PI
+            return(Math.abs((a % n + n) % n - Math.PI))
+        }
+
+        function baseline(){
+            let alpha_avg = 0;
+            let beta_avg = 0;
+            let gamma_avg = 0;
+            let iters = 100;
+            for (let i = 0; i < iters; i++) {
+                alpha_avg += DeviceMotionEvent.alpha;
+                beta_avg += DeviceMotionEvent.beta;
+                gamma_avg += DeviceMotionEvent.gamma;
+            }
+            alpha_avg = alpha_avg / iters;
+            beta_avg = beta_avg / iters;
+            gamma_avg = gamma_avg / iters;
+            params.baseline = [alpha_avg, beta_avg, gamma_avg]
+            document.getElementById('baseline').innerHTML = 'alpha: ' + alpha_avg + '; beta: ' + beta_avg + '; gamma: ' + gamma_avg;
+            compute_window();
+        }
+
+        function maximum(){
+            let alpha_avg = 0;
+            let beta_avg = 0;
+            let gamma_avg = 0;
+            let iters = 100;
+            for (let i = 0; i < iters; i++) {
+                alpha_avg += DeviceMotionEvent.alpha;
+                beta_avg += DeviceMotionEvent.beta;
+                gamma_avg += DeviceMotionEvent.gamma;
+            }
+            alpha_avg = alpha_avg / iters;
+            beta_avg = beta_avg / iters;
+            gamma_avg = gamma_avg / iters;
+            params.maximum = [alpha_avg, beta_avg, gamma_avg];
+            document.getElementById('maximum').innerHTML = 'alpha: ' + alpha_avg + '; beta: ' + beta_avg + '; gamma: ' + gamma_avg;
+            compute_window();
+        }
+
+        function compute_window(){
+            if (params.baseline === false || params.maximum === false){
+                return;
+            }
+            let alpha_diff = angle_diff(params.maximum[0], params.baseline[0]);
+            let beta_diff = angle_diff(params.maximum[1], params.baseline[1]);
+            let gamma_diff = angle_diff(params.maximum[2], params.baseline[2]);
+            if (Math.abs(alpha_diff) >= Math.abs(gamma_diff) && Math.abs(alpha_diff) >= Math.abs(beta_diff)){
+                window_params.angle = "alpha";
+                window_params.min = params.baseline[0];
+                window_params.max = params.maximum[0];
+            }
+            else if (Math.abs(beta_diff) >= Math.abs(gamma_diff) && Math.abs(alpha_diff) <= Math.abs(beta_diff)){
+                window_params.angle = "beta";
+                window_params.min = params.baseline[1];
+                window_params.max = params.maximum[1];
+            }
+            else if (Math.abs(beta_diff) <= Math.abs(gamma_diff) && Math.abs(alpha_diff) <= Math.abs(gamma_diff)){
+                window_params.angle = "gamma";
+                window_params.min = params.baseline[2];
+                window_params.max = params.maximum[2];
+            }
+            window_params.set = true;
+            window_params.range = angle_diff(window_params.max, window_params.min);
+            document.getElementById('window_status').innerHTML = 'Current status: Window Calculated ' + window_params.angle;
+        }
+        
+       function updateOrientation(event){
+                document.getElementById('orient_data').innerHTML = '(alpha: ' + event.alpha + '; beta: ' + event.beta + '; gamma: ' + event.gamma + ')';
+                if (window_params.set == true){
+                    let angle = event.alpha;
+                    if (window_params.angle == "alpha"){
+                        angle = event.alpha;
+                    }
+                    else if (window_params.angle == "beta"){
+                        angle = event.beta;
+                    }
+                    else if (window_params.angle == "gamma"){
+                        angle = event.gamma;
+                    }
+                    let dist = angle_diff(window_params.min, angle);
+                    let frac = dist/window_params.range;
+                    document.getElementById('window_status').style.backgroundColor = 'rgb(255,' + Math.round(frac * 255) + ',' + Math.round(frac * 255) + ')';
+                    document.getElementById('window_status').innerHTML = 'Current status: frac='+ frac;
+                    // put post request here
+                    fetch("https://131.215.167.168:8000/zappy", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            frac_data: frac
+                        }),
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8"
+                    }});
+                }
+        }
+
+    </script>
+
+</body>
+</html>
